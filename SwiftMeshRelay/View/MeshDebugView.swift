@@ -56,7 +56,7 @@ struct MeshDebugView: View {
                 sendSection
                 inboundSection
             }
-            .navigationTitle("Mesh Debug")
+            .navigationTitle("SwiftMeshRelay")
             .font(.system(.caption, design: .monospaced))
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarLeading) {
@@ -86,7 +86,7 @@ struct MeshDebugView: View {
         }
     }
 
-    // MARK: Sections
+    // MARK: - Sections
     private var identitySection: some View {
         Section("Identity") {
             Text("My ID » \(mesh.myID.uuidString.prefix(8))")

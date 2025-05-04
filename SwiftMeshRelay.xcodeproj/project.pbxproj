@@ -321,7 +321,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.adrior.swift-mesh-relay--SAMPLE-CODE-DISAMBIGUATOR-";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.adrior.swift-mesh-relay";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -346,7 +346,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.adrior.swift-mesh-relay--SAMPLE-CODE-DISAMBIGUATOR-";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.adrior.swift-mesh-relay";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;

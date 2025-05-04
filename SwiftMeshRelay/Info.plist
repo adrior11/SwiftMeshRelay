@@ -27,11 +27,11 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Scan QR codes to add new contacts.</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>This app requires local network service. Supply a value for this string to explain how the user benefits when they allow the app to access local network service.</string>
+	<string>Needed to discover nearby devices without the internet.</string>
 	<key>NSNearbyInteractionAllowOnceUsageDescription</key>
-	<string>This app demonstrates the NearbyInteraction framework. Supply a value for this string to explain how the user benefits when they allow the app to use NearbyInteraction.</string>
+	<string>Needed to discover nearby devices without the internet.</string>
 	<key>NSNearbyInteractionUsageDescription</key>
-	<string>This app demonstrates the NearbyInteraction framework. Supply a value for this string to explain how the user benefits when they allow the app to use NearbyInteraction.</string>
+	<string>Needed to discover nearby devices without the internet.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

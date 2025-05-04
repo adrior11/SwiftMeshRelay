@@ -29,7 +29,7 @@
 import Foundation
 
 enum PacketType: UInt8 {  // 1‑byte discriminator
-    // case beacon = 0x42            // 'B'
+    // case beacon = 0x42  // 'B'
     case frame = 0x46  // 'F'
     case ack = 0x61  // 'a'
 }
@@ -38,10 +38,8 @@ enum PacketType: UInt8 {  // 1‑byte discriminator
 func buildPacket(type: PacketType, header: Data, body: Data = .init()) -> Data {
     print(type.rawValue)
     var d = Data()
-    // Discriminator
-    d.append(type.rawValue)
-    // Big-endian header length
-    var lenBE = UInt16(header.count).bigEndian
+    d.append(type.rawValue)  // Discriminator
+    var lenBE = UInt16(header.count).bigEndian  // Big-endian header length
     withUnsafeBytes(of: &lenBE) { ptr in
         d.append(contentsOf: ptr)
     }
