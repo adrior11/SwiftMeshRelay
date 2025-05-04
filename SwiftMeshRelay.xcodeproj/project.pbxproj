@@ -17,7 +17,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		43D6B566D60E1D86FC1BA04C /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		65E4A7232DC57D83003A3DA6 /* SwiftMeshRelayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMeshRelayApp.swift; sourceTree = "<group>"; };
 		65E4A7372DC57E24003A3DA6 /* MeshConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshConfig.swift; sourceTree = "<group>"; };
 		65E4A7392DC57E35003A3DA6 /* MeshError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshError.swift; sourceTree = "<group>"; };
@@ -50,14 +49,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		427FE0B6B15E6C5D7BF8E009 /* Configuration */ = {
-			isa = PBXGroup;
-			children = (
-				43D6B566D60E1D86FC1BA04C /* SampleCode.xcconfig */,
-			);
-			name = Configuration;
-			sourceTree = "<group>";
-		};
 		65E4A7362DC57E1F003A3DA6 /* Mesh */ = {
 			isa = PBXGroup;
 			children = (
@@ -84,7 +75,6 @@
 				ADDB28FC24897F7D00F72056 /* SwiftMeshRelay */,
 				ADDB28FB24897F7D00F72056 /* Products */,
 				AD026E6C248E77F60016A2B6 /* Frameworks */,
-				427FE0B6B15E6C5D7BF8E009 /* Configuration */,
 			);
 			sourceTree = "<group>";
 		};
@@ -202,7 +192,6 @@
 /* Begin XCBuildConfiguration section */
 		ADDB292224897F7F00F72056 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 43D6B566D60E1D86FC1BA04C /* SampleCode.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -264,7 +253,6 @@
 		};
 		ADDB292324897F7F00F72056 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 43D6B566D60E1D86FC1BA04C /* SampleCode.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -320,7 +308,6 @@
 		};
 		ADDB292524897F7F00F72056 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 43D6B566D60E1D86FC1BA04C /* SampleCode.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -346,7 +333,6 @@
 		};
 		ADDB292624897F7F00F72056 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 43D6B566D60E1D86FC1BA04C /* SampleCode.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
