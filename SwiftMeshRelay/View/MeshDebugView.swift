@@ -87,6 +87,7 @@ struct MeshDebugView: View {
     }
 
     // MARK: - Sections
+
     private var identitySection: some View {
         Section("Identity") {
             Text("My ID » \(mesh.myID.uuidString.prefix(8))")
