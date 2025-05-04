@@ -28,10 +28,10 @@
 
 import Foundation
 
-enum PacketType: UInt8 {          // 1‑byte discriminator
+enum PacketType: UInt8 {  // 1‑byte discriminator
     // case beacon = 0x42            // 'B'
-    case frame  = 0x46            // 'F'
-    case ack    = 0x61            // 'a'
+    case frame = 0x46  // 'F'
+    case ack = 0x61  // 'a'
 }
 
 /// put <type><u16 headerLen><header><payload?>

@@ -26,8 +26,8 @@
 //  SOFTWARE.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct SwiftMeshRelayApp: App {

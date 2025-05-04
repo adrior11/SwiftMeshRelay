@@ -26,10 +26,10 @@
 //  SOFTWARE.
 //
 
-import SwiftUI
-import Foundation
-import CoreImage.CIFilterBuiltins
 import AVFoundation
+import CoreImage.CIFilterBuiltins
+import Foundation
+import SwiftUI
 
 protocol ScannerViewControllerDelegate: AnyObject {
     func didFind(card: ContactCard)
@@ -45,8 +45,9 @@ class ContactScannerViewController: UIViewController, AVCaptureMetadataOutputObj
         view.backgroundColor = .black
 
         guard let device = AVCaptureDevice.default(for: .video),
-              let input = try? AVCaptureDeviceInput(device: device),
-              session.canAddInput(input) else {
+            let input = try? AVCaptureDeviceInput(device: device),
+            session.canAddInput(input)
+        else {
             return
         }
         session.addInput(input)
@@ -70,15 +71,17 @@ class ContactScannerViewController: UIViewController, AVCaptureMetadataOutputObj
         previewLayer.frame = view.layer.bounds
     }
 
-    func metadataOutput(_ output: AVCaptureMetadataOutput,
-                        didOutput metadataObjects: [AVMetadataObject],
-                        from connection: AVCaptureConnection) {
+    func metadataOutput(
+        _ output: AVCaptureMetadataOutput,
+        didOutput metadataObjects: [AVMetadataObject],
+        from connection: AVCaptureConnection
+    ) {
         for object in metadataObjects {
             guard let qrObj = object as? AVMetadataMachineReadableCodeObject,
-                  qrObj.type == .qr,
-                  let string = qrObj.stringValue,
-                  let b64Data = Data(base64Encoded: string),
-                  let card = try? JSONDecoder().decode(ContactCard.self, from: b64Data)
+                qrObj.type == .qr,
+                let string = qrObj.stringValue,
+                let b64Data = Data(base64Encoded: string),
+                let card = try? JSONDecoder().decode(ContactCard.self, from: b64Data)
             else { continue }
 
             session.stopRunning()

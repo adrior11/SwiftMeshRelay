@@ -26,11 +26,11 @@
 //  SOFTWARE.
 //
 
+import CryptoKit
 import Foundation
 import MultipeerConnectivity
-import CryptoKit
-import os
 import SwiftData
+import os
 
 // TODO: Refactor
 @MainActor
@@ -38,14 +38,14 @@ final class MeshService: NSObject, ObservableObject {
     static let shared = MeshService()
     @Published fileprivate(set) var reachablePeers: [MCPeerID] = []
     @Published fileprivate(set) var lastInbound: (from: UUID, text: String)?
-    
+
     func configure(container: ModelContainer) {
         self.context = container.mainContext
         advertiser.delegate = self
         browser.delegate = self
         log.info("Configured mesh service")
     }
-    
+
     func start() {
         guard state == .stopped else { return }
         log.info("Starting mesh service...")
@@ -61,7 +61,8 @@ final class MeshService: NSObject, ObservableObject {
         log.info("Stopping mesh service...")
         advertiser.stopAdvertisingPeer()
         browser.stopBrowsingForPeers()
-        beaconTimer?.cancel(); beaconTimer = nil
+        beaconTimer?.cancel()
+        beaconTimer = nil
         sessions.values.forEach { $0.disconnect() }
         sessions.removeAll()
         state = .stopped
@@ -99,8 +100,10 @@ final class MeshService: NSObject, ObservableObject {
 
     // MPC plumbing
     internal let myPeer = MCPeerID(displayName: UIDevice.current.name)
-    private lazy var advertiser = MCNearbyServiceAdvertiser(peer: myPeer, discoveryInfo: nil, serviceType: MeshConfig.serviceType)
-    private lazy var browser = MCNearbyServiceBrowser(peer: myPeer,  serviceType: MeshConfig.serviceType)
+    private lazy var advertiser = MCNearbyServiceAdvertiser(
+        peer: myPeer, discoveryInfo: nil, serviceType: MeshConfig.serviceType)
+    private lazy var browser = MCNearbyServiceBrowser(
+        peer: myPeer, serviceType: MeshConfig.serviceType)
     internal var sessions: [MCPeerID: MCSession] = [:]
 
     // Route table + sequence tracking
@@ -138,7 +141,8 @@ final class MeshService: NSObject, ObservableObject {
     // MARK: Frame queue
     private func queueFrame(dest: UUID, ttl: UInt8, cipher: Data) {
         let frameID = dest.uuidString + "|" + String(seqNo)
-        let entity  = FrameEntity(frameID: frameID, sourceID: myID, destID: dest, ttl: ttl, cipherBlob: cipher)
+        let entity = FrameEntity(
+            frameID: frameID, sourceID: myID, destID: dest, ttl: ttl, cipherBlob: cipher)
         context.insert(entity)
         try? context.save()
     }
@@ -148,24 +152,27 @@ final class MeshService: NSObject, ObservableObject {
         log.info("Checking for frames to send...")
         guard let frames = try? context.fetch(fetch) else { return }
         log.info("Frame count: \(frames.count)")
-        
+
         for frame in frames {
             log.info("Frame to \(frame.destID)...")
-            
+
             // Build header & packet once
-            let header = FrameHeader(origin: myID,
-                                     dest: frame.destID,
-                                     ttl: frame.ttlRemaining,
-                                     seq: frame.createdAt.timeIntervalSince1970.bitPattern)
+            let header = FrameHeader(
+                origin: myID,
+                dest: frame.destID,
+                ttl: frame.ttlRemaining,
+                seq: frame.createdAt.timeIntervalSince1970.bitPattern)
             guard let headerData = try? JSONEncoder().encode(header) else { continue }
-            let packet = buildPacket(type: .frame,
-                                     header: headerData,
-                                     body: frame.cipherBlob)
+            let packet = buildPacket(
+                type: .frame,
+                header: headerData,
+                body: frame.cipherBlob)
 
             // Pick sessions: either the single hop, or *all* sessions
             let targetSessions: [MCSession]
             if let hop = bestNextHop[frame.destID],
-               let sess = sessions[hop] {
+                let sess = sessions[hop]
+            {
                 targetSessions = [sess]
             } else {
                 log.info("No route for \(frame.destID). Flooding to all peers.")
@@ -189,48 +196,50 @@ final class MeshService: NSObject, ObservableObject {
         }
         try? context.save()
     }
-    
+
     // MARK: Contact Card
     var myContactCard: ContactCard {
         let pubKeyData = privateKey.publicKey.rawRepresentation
-        let nickname   = UIDevice.current.name
-        return ContactCard(uuid: myID,
-                           nickname: nickname,
-                           pubKey: pubKeyData)
+        let nickname = UIDevice.current.name
+        return ContactCard(
+            uuid: myID,
+            nickname: nickname,
+            pubKey: pubKeyData)
     }
-    
+
     // MARK: Crypto helper
     private func deriveSymmetricKey(to dest: UUID) throws -> SymmetricKey {
         log.info("Lookup public key for \(dest)")
         guard let keyData = KeyStore.pubKey(for: dest, in: context) else {
             log.error("Public key for \(dest) not found")
-            throw MeshError.pubKeyMissing // Signal "no key yet"
+            throw MeshError.pubKeyMissing  // Signal "no key yet"
         }
         log.info("Creating symmetric key for \(dest)...")
         let peerPub = try Curve25519.KeyAgreement.PublicKey(rawRepresentation: keyData)
         log.info("Creating shared secret...")
-        let secret  = try privateKey.sharedSecretFromKeyAgreement(with: peerPub)
+        let secret = try privateKey.sharedSecretFromKeyAgreement(with: peerPub)
         log.info("Derived symmetric key...")
-        let hkdfSecret = secret.hkdfDerivedSymmetricKey(using: SHA256.self,
-                                              salt: Data(), sharedInfo: Data(),
-                                              outputByteCount: 32)
+        let hkdfSecret = secret.hkdfDerivedSymmetricKey(
+            using: SHA256.self,
+            salt: Data(), sharedInfo: Data(),
+            outputByteCount: 32)
         return hkdfSecret
     }
-    
+
     /*
     private func handleBeacon(_ hdr: Data, via peer: MCPeerID) {
         guard var b = try? JSONDecoder().decode(Beacon.self, from: hdr) else { return }
-        
+    
         log.info("Handling beacon from \(peer.displayName)")
-
+    
         if let seen = lastSeq[b.origin], seen >= b.seqNo { return }   // duplicate / old
         lastSeq[b.origin] = b.seqNo
         bestNextHop[b.origin] = peer
-
+    
         guard b.ttl > 1 else { return }  // stop here
         b.ttl &-= 1; b.hop &+= 1
         guard let rebroadcast = try? JSONEncoder().encode(b) else { return }
-
+    
         let pkt = buildPacket(type: .beacon, header: rebroadcast)
         for session in sessions.values where session != sessions[peer] {
             try? session.send(pkt, toPeers: session.connectedPeers, with: .unreliable)
@@ -242,7 +251,7 @@ final class MeshService: NSObject, ObservableObject {
         log.info("Trying to decode frame header")
         log.info("Raw header JSON: \(String(data: hdr, encoding: .utf8) ?? "<not UTF8>")")
         guard var h = try? JSONDecoder().decode(FrameHeader.self, from: hdr) else { return }
-        
+
         log.info("Handling frame from \(peer.displayName)")
 
         if h.dest == myID {
@@ -250,9 +259,10 @@ final class MeshService: NSObject, ObservableObject {
                 log.warning("Could not derive symmetric key")
                 return
             }
-                    
+
             guard let box = try? ChaChaPoly.SealedBox(combined: cipher),
-                  let clear = try? ChaChaPoly.open(box, using: symm) else { return }
+                let clear = try? ChaChaPoly.open(box, using: symm)
+            else { return }
 
             let text = String(data: clear, encoding: .utf8) ?? "<bin>"
             self.lastInbound = (from: h.dest, text)
@@ -261,12 +271,14 @@ final class MeshService: NSObject, ObservableObject {
         } else {
             guard h.ttl > 1 else { return }
             h.ttl &-= 1
-            let nextPacket = buildPacket(type: .frame,
-                                      header: try! JSONEncoder().encode(h),
-                                      body: cipher)
+            let nextPacket = buildPacket(
+                type: .frame,
+                header: try! JSONEncoder().encode(h),
+                body: cipher)
 
             if let hop = bestNextHop[h.dest],
-               let sess = sessions[hop] {
+                let sess = sessions[hop]
+            {
                 try? sess.send(nextPacket, toPeers: [hop], with: .reliable)
             } else {
                 for sess in sessions.values {
@@ -277,7 +289,7 @@ final class MeshService: NSObject, ObservableObject {
     }
 
     private func sendAck(for header: FrameHeader, via peer: MCPeerID) {
-        var ackID = withUnsafeBytes(of: header.seq.bigEndian, Array.init) // 8‑byte ID
+        var ackID = withUnsafeBytes(of: header.seq.bigEndian, Array.init)  // 8‑byte ID
         let packet = buildPacket(type: .ack, header: Data(ackID))
         sessions[peer].map { try? $0.send(packet, toPeers: [$0.myPeerID], with: .reliable) }
     }
@@ -285,24 +297,33 @@ final class MeshService: NSObject, ObservableObject {
     private func handleAck(_ hdr: Data, via _: MCPeerID) {
         guard hdr.count == 8 else { return }
         let seq = UInt64(bigEndian: hdr.withUnsafeBytes { $0.load(as: UInt64.self) })
-        let id  = sessions.values.flatMap { $0.connectedPeers }.first?.displayName ?? ""
+        let id = sessions.values.flatMap { $0.connectedPeers }.first?.displayName ?? ""
         // TODO: look up FrameEntity with matching seq and delete it
         // TODO: store seq in FrameEntity when queueing
     }
 }
 
 @MainActor
-extension MeshService: MCNearbyServiceAdvertiserDelegate, MCNearbyServiceBrowserDelegate, MCSessionDelegate {
-    func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
+extension MeshService: MCNearbyServiceAdvertiserDelegate, MCNearbyServiceBrowserDelegate,
+    MCSessionDelegate
+{
+    func browser(
+        _ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID,
+        withDiscoveryInfo info: [String: String]?
+    ) {
         guard sessions.count < MeshConfig.maxNeighbours else { return }
-        let ctx = privateKey.publicKey.rawRepresentation   // send pubKey as context
+        let ctx = privateKey.publicKey.rawRepresentation  // send pubKey as context
         browser.invitePeer(peerID, to: makeSession(for: peerID), withContext: ctx, timeout: 5)
     }
-    func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) { sessions[peerID]?.disconnect()
+    func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
+        sessions[peerID]?.disconnect()
         reachablePeers.removeAll { $0 == peerID }
         sessions[peerID] = nil
     }
-    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
+    func advertiser(
+        _ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID,
+        withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void
+    ) {
         invitationHandler(true, makeSession(for: peerID))
     }
 
@@ -317,23 +338,24 @@ extension MeshService: MCNearbyServiceAdvertiserDelegate, MCNearbyServiceBrowser
 
     func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
         switch state {
-            case .connected:
-                // add only if new
-                if !reachablePeers.contains(peerID) {
-                    reachablePeers.append(peerID)
-                }
-            case .notConnected:
-                // remove on disconnect
-                reachablePeers.removeAll { $0 == peerID }
-                sessions[peerID] = nil
-            default:
-                break
+        case .connected:
+            // add only if new
+            if !reachablePeers.contains(peerID) {
+                reachablePeers.append(peerID)
+            }
+        case .notConnected:
+            // remove on disconnect
+            reachablePeers.removeAll { $0 == peerID }
+            sessions[peerID] = nil
+        default:
+            break
         }
     }
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
         guard data.count > 3,
-              let type = PacketType(rawValue: data[0]) else { return }
-        
+            let type = PacketType(rawValue: data[0])
+        else { return }
+
         let rawType = data[0]
         print("[mesh] got raw type byte: 0x\(String(format: "%02X", rawType))")
 
@@ -341,16 +363,25 @@ extension MeshService: MCNearbyServiceAdvertiserDelegate, MCNearbyServiceBrowser
         let headerLength = Int(data[1]) << 8 | Int(data[2])
         guard data.count >= 3 + headerLength else { return }
 
-        let header = data[3 ..< 3 + headerLength]
-        let body   = data.dropFirst(3 + headerLength)
-        
+        let header = data[3..<3 + headerLength]
+        let body = data.dropFirst(3 + headerLength)
+
         switch type {
-            //case .beacon: handleBeacon(header, via: peerID)
-            case .frame:  handleFrame(hdr: header, cipher: body, via: peerID)
-            case .ack:    handleAck(header, via: peerID)
+        //case .beacon: handleBeacon(header, via: peerID)
+        case .frame: handleFrame(hdr: header, cipher: body, via: peerID)
+        case .ack: handleAck(header, via: peerID)
         }
     }
-    func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {}
-    func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress) {}
-    func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL?, withError error: Error?) {}
+    func session(
+        _ session: MCSession, didReceive stream: InputStream, withName streamName: String,
+        fromPeer peerID: MCPeerID
+    ) {}
+    func session(
+        _ session: MCSession, didStartReceivingResourceWithName resourceName: String,
+        fromPeer peerID: MCPeerID, with progress: Progress
+    ) {}
+    func session(
+        _ session: MCSession, didFinishReceivingResourceWithName resourceName: String,
+        fromPeer peerID: MCPeerID, at localURL: URL?, withError error: Error?
+    ) {}
 }

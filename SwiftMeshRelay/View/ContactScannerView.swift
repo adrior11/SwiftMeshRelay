@@ -26,12 +26,12 @@
 //  SOFTWARE.
 //
 
-import SwiftUI
+import AVFoundation
 import CoreImage
 import CoreImage.CIFilterBuiltins
-import AVFoundation
-import VisionKit
 import SwiftData
+import SwiftUI
+import VisionKit
 
 struct ContactScannerView: UIViewControllerRepresentable {
     @Environment(\.modelContext) private var context
@@ -47,7 +47,8 @@ struct ContactScannerView: UIViewControllerRepresentable {
         return vc
     }
 
-    func updateUIViewController(_ uiViewController: ContactScannerViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: ContactScannerViewController, context: Context)
+    {}
 
     class Coordinator: NSObject, ScannerViewControllerDelegate {
         let parent: ContactScannerView

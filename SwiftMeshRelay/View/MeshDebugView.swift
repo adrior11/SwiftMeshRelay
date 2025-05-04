@@ -26,12 +26,12 @@
 //  SOFTWARE.
 //
 
-import SwiftUI
-import SwiftData
-import MultipeerConnectivity
-import GroupActivities
-import CryptoKit
 import CoreTransferable
+import CryptoKit
+import GroupActivities
+import MultipeerConnectivity
+import SwiftData
+import SwiftUI
 
 struct MeshDebugView: View {
     @Environment(\.modelContext) private var ctx
@@ -63,10 +63,14 @@ struct MeshDebugView: View {
                     EditButton()
                 }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    Button { showingMyQR = true } label: {
+                    Button {
+                        showingMyQR = true
+                    } label: {
                         Image(systemName: "qrcode")
                     }
-                    Button { showingScanner = true } label: {
+                    Button {
+                        showingScanner = true
+                    } label: {
                         Image(systemName: "camera.viewfinder")
                     }
                 }
@@ -81,7 +85,7 @@ struct MeshDebugView: View {
             }
         }
     }
-    
+
     // MARK: Sections
     private var identitySection: some View {
         Section("Identity") {

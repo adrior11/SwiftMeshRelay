@@ -26,14 +26,14 @@
 //  SOFTWARE.
 //
 
-import SwiftData
-import Foundation
 import CryptoKit
+import Foundation
+import SwiftData
 
 @Model final class MeshContact {
     @Attribute(.unique) var uuid: UUID
     var nickname: String
-    var pubKey: Data?   // X25519 public key
+    var pubKey: Data?  // X25519 public key
 
     init(uuid: UUID, nickname: String, pubKey: Data? = nil) {
         self.uuid = uuid

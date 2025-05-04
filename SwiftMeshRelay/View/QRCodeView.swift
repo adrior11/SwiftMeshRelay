@@ -26,17 +26,17 @@
 //  SOFTWARE.
 //
 
-import SwiftUI
+import AVFoundation
 import CoreImage
 import CoreImage.CIFilterBuiltins
-import AVFoundation
 import SwiftData
+import SwiftUI
 
 struct QRCodeView: View {
     let contactCard: ContactCard
     let context = CIContext()
     let filter = CIFilter.qrCodeGenerator()
-    
+
     private func generateQRCode() -> UIImage? {
         // Encode ContactCard as Base64-encoded JSON
         guard let jsonData = try? JSONEncoder().encode(contactCard) else { return nil }

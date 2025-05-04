@@ -26,8 +26,8 @@
 //  SOFTWARE.
 //
 
-import SwiftData
 import Foundation
+import SwiftData
 
 @Model final class FrameEntity {
     @Attribute(.unique) var id: String
@@ -38,8 +38,11 @@ import Foundation
     var createdAt: Date
     var expiresAt: Date
     var ackPending: Bool
-    
-    init(frameID: String, sourceID: UUID, destID: UUID, ttl: UInt8, cipherBlob: Data, lifetime: TimeInterval = 84_400) {
+
+    init(
+        frameID: String, sourceID: UUID, destID: UUID, ttl: UInt8, cipherBlob: Data,
+        lifetime: TimeInterval = 84_400
+    ) {
         self.id = frameID
         self.sourceID = sourceID
         self.destID = destID
