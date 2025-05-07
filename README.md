@@ -1,4 +1,4 @@
-# 🛰️ SwiftMeshRelay – Check24 GenDev Hackathon Winning Entry
+# 🛰️ SwiftMeshRelay – Check24 GenDev Hackathon [Winning]
 
 > **Swift-native mesh messaging for iOS** – zero infrastructure, end-to-end encrypted, opportunistic multi-hop routing.
 
