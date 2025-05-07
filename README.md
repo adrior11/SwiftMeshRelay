@@ -14,7 +14,7 @@ flowchart TD
     subgraph App
         UI[SwiftUI Views] -->|binds/observes| MeshService
     end
-    MeshService -->|Core Data / SwiftData| Storage[(SQLite On-Device)]
+    MeshService -->|SwiftData| Storage[(SQLite On-Device)]
     MeshService -->|MPC Sessions| AppleMPC{MultipeerConnectivity}
     AppleMPC <--> Peers[[Nearby iOS Devices]]
     MeshService --> Keychain[(Secure Enclave / Keychain)]
