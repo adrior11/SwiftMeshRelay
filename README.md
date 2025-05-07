@@ -115,24 +115,6 @@ plaintext → ChaCha20‑Poly1305(seal) → cipherBlob → Frame → MPC → air
 sequenceDiagram
     participant UI as MeshDebugView
     participant Mesh as MeshService
-    participant Storage
-    participant MPC as MCSession
-    participant Peer
-
-    UI->>Mesh: sendMessage("Hi", destUUID)
-    Mesh->>Storage: insert(FrameEntity)
-    Mesh->>Mesh: flush()
-    Mesh->>MPC: send(Packet)
-    Peer->>Mesh: Packet (Frame)
-    Mesh->>Mesh: handleFrame()
-    Mesh-->>UI: update lastInbound
-    Mesh->>Peer: Packet (Ack)
-```
-
-```mermaid
-sequenceDiagram
-    participant UI as MeshDebugView
-    participant Mesh as MeshService
     participant Crypto as Crypto (ChaCha20‑Poly1305)
     participant Storage as SwiftData
     participant MPC as MCSession
@@ -151,7 +133,7 @@ sequenceDiagram
     Hop->>Dest: relay Packet (ttl‒1)
     Dest->>Dest: decrypt(cipherBlob)
     Dest-->>Hop: Ack(frameID)
-    Hop-->>MPC: Ack(frameID)
+    Hop-->>MPC: relay Ack(frameID)
     MPC-->>Mesh: Ack(frameID)
     Mesh->>Storage: mark delivered & delete FrameEntity
     Mesh-->>UI: publish lastInbound
@@ -177,8 +159,8 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant A as Device A
-    participant B as Device B
+    participant A as Alice
+    participant B as Bob
 
     A->>A: encode(ContactCard) → QR
     A->>B: scan QR
