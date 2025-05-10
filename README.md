@@ -49,7 +49,7 @@ Each packet after MPC encryption follows a consistent, minimal header layout:
 <u8 type> <u16 BE headerLen> <header …> <payload …?>
 ```
 
-| Type       | Code         | Header Payload                                | Noted                |
+| Type       | Code         | Header Payload                                | Notes                |
 | ---------- | ------------ | --------------------------------------------- | ---------------------|
 | **Frame**  | `0x46 ("F")` | `FrameHeader` (origin, dest, ttl, seq)        | Data + Metadata      |
 | **Ack**    | `0x61 ("a")` | 8-byte frame identifier                       | Confirms delivery    |
@@ -209,7 +209,6 @@ $ open SwiftMeshRelay.xcodeproj
 * 🌐 **Beaconing** – Re-enable and improve for efficient routing.
 * 📨 **Ack Cleanup** – Fully clear delivered frames on both ends.
 * 🔋 **Battery Optimizations** – Use adaptive beaconing based on activity.
-* 📶 **Range Testing** – Benchmark BLE vs Wi-Fi Direct.
 
 ## License
 
