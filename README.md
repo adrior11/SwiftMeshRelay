@@ -15,8 +15,8 @@ flowchart TD
         UI[SwiftUI Views] -->|binds/observes| MeshService
     end
     MeshService -->|SwiftData| Storage[(SQLite On-Device)]
-    MeshService -->|MPC Sessions| AppleMPC{MultipeerConnectivity}
-    AppleMPC <--> Peers[[Nearby iOS Devices]]
+    MeshService -->|MPC Sessions| MPC{MultipeerConnectivity}
+    MPC <--> Peers[[Nearby iOS Devices]]
     MeshService --> Keychain[(Secure Enclave / Keychain)]
 ```
 
@@ -46,7 +46,7 @@ flowchart TD
 Each packet after MPC encryption follows a consistent, minimal header layout:
 
 ```
-<u8 type> <u16 BE headerLen> <header …> <payload …?>
+<u8 type> <u16 big-endian headerLen> <header …> <payload …?>
 ```
 
 | Type       | Code         | Header Payload                                | Notes                |
@@ -106,6 +106,11 @@ plaintext → ChaCha20‑Poly1305(seal) → cipherBlob → Frame → MPC → air
 3. Encrypt using **ChaCha20-Poly1305** AEAD.
 
 > 🔐 Only the destination peer can decrypt. Hops only forward opaque ciphertext.
+
+> [!CAUTION]
+> SwiftMeshRelay is a proof-of-concept built in 24h for the Check24 GenDev Hackathon.  
+> The cryptography and protocol have **not** undergone a formal security audit, threat model, or peer review.  
+> Use the code for educational purposes only; do **not** rely on it to protect sensitive or life-critical data.
 
 ## Sequence Diagrams
 
@@ -184,6 +189,8 @@ MeshContact 1───* FrameEntity
 
 ## Running the Demo
 
+*(tested with Swift 6.1, Xcode 16.3, iOS 17.6+; demo devices ran iOS 18.4/18.4.1)*.
+
 ```bash
 # 1. Clone
 $ git clone https://github.com/check24/SwiftMeshRelay.git
@@ -192,17 +199,19 @@ $ cd SwiftMeshRelay
 # 2. Open workspace
 $ open SwiftMeshRelay.xcodeproj
 
-# 3. Select a provisioning profile (if needed) and run on device
+# 3. Team-sign the target or change bundle ID if you hit code-sign errors.
+
+# 4. Select a provisioning profile (if needed) and run on device
 ```
 
 * Grant Local Network & Camera access when prompted.
-* Install on **atleast two iOS devices** (simulators do not support BLE).
+* Install on **at least two iOS devices** (simulators do not support BLE).
 * Use the **QR icon** to show your contact card.
 * Use the **Camera icon** to scan and add peers.
 * Tap a **contact** and send a message.
 
 > [!TIP]
-> The UI shows the neigboor count. Try to position the devices in a chain, such that the endpoints don't detect each other.
+> The UI shows the neighbor count. Try to position the devices in a chain such that the endpoints don't detect each other.
 
 ## Limitations & Future Improvements
 
