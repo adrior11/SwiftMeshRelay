@@ -2,6 +2,8 @@
 
 > **Swift-native mesh messaging for iOS** – zero infrastructure, end-to-end encrypted, opportunistic multi-hop routing.
 
+<img src="assets/demo.gif" alt="SwiftMeshRelay demo" width="320">
+
 ## Overview
 
 SwiftMeshRelay lets iOS devices chat directly—no SIM, Wi‑Fi, or router required. Public keys are exchanged via QR, after which **MultipeerConnectivity** (MPC) forms an ad‑hoc wireless mesh. Messages travel hop‑by‑hop, wrapped in a minimal protocol and individually **ChaCha20‑Poly1305** protected.
